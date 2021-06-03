@@ -1,11 +1,11 @@
 from datetime import timedelta
 from typing import Dict
-from adaptive.statistics.StatisticsTypes import StatisticsTypes
-from base.Pattern import Pattern
-from base.PatternStructure import SeqOperator, PrimitiveEventStructure
-from condition.Condition import SimpleCondition, Variable
-from adaptive.optimizer.Optimizer import Optimizer
-from adaptive.optimizer.OptimizerFactory import OptimizerFactory
+from OpenCEP.adaptive.statistics.StatisticsTypes import StatisticsTypes
+from OpenCEP.base.Pattern import Pattern
+from OpenCEP.base.PatternStructure import SeqOperator, PrimitiveEventStructure
+from OpenCEP.condition.Condition import SimpleCondition, Variable
+from OpenCEP.adaptive.optimizer.Optimizer import Optimizer
+from OpenCEP.adaptive.optimizer.OptimizerFactory import OptimizerFactory
 from test.EvalTestsDefaults import DEFAULT_TESTING_GREEDY_INVARIANT_OPTIMIZER_SETTINGS, \
     DEFAULT_TESTING_ZSTREAM_INVARIANT_OPTIMIZER_SETTINGS
 
@@ -47,7 +47,8 @@ def greedyInvariantOptimizerTreeChangeFailTest_1():
 
     is_changed = optimizer_test(old_statistics, new_statistics, optimizer)
     result = "Succeeded" if not is_changed else "Failed"
-    print(f"Test greedyInvariantOptimizerTreeChangeFailTest_1 result: {result}")
+    print(
+        f"Test greedyInvariantOptimizerTreeChangeFailTest_1 result: {result}")
 
 
 def greedyInvariantOptimizerTreeChangeFailTest_2():
@@ -74,7 +75,8 @@ def greedyInvariantOptimizerTreeChangeFailTest_2():
 
     is_changed = optimizer_test(old_statistics, new_statistics, optimizer)
     result = "Succeeded" if not is_changed else "Failed"
-    print(f"Test greedyInvariantOptimizerTreeChangeFailTest_2 result: {result}")
+    print(
+        f"Test greedyInvariantOptimizerTreeChangeFailTest_2 result: {result}")
 
 
 def greedyInvariantOptimizerTreeChangeTest_1():
@@ -127,7 +129,8 @@ def zstreamInvariantOptimizerTreeChangeFailTest_1():
 
     is_changed = optimizer_test(old_statistics, new_statistics, optimizer)
     result = "Succeeded" if not is_changed else "Failed"
-    print(f"Test zstreamInvariantOptimizerTreeChangeFailTest_1 result: {result}")
+    print(
+        f"Test zstreamInvariantOptimizerTreeChangeFailTest_1 result: {result}")
 
 
 def zstreamInvariantOptimizerTreeChangeTest_1():

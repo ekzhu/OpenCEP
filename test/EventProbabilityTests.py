@@ -1,22 +1,22 @@
 from test.testUtils import *
 from datetime import timedelta
-from condition.Condition import (
+from OpenCEP.condition.Condition import (
     Variable,
     SimpleCondition,
 )
-from condition.CompositeCondition import AndCondition
-from condition.BaseRelationCondition import (
+from OpenCEP.condition.CompositeCondition import AndCondition
+from OpenCEP.condition.BaseRelationCondition import (
     GreaterThanCondition,
     SmallerThanCondition,
 )
-from base.PatternStructure import (
+from OpenCEP.base.PatternStructure import (
     AndOperator,
     KleeneClosureOperator,
     NegationOperator,
     SeqOperator,
     PrimitiveEventStructure,
 )
-from base.Pattern import Pattern
+from OpenCEP.base.Pattern import Pattern
 
 nasdaqEventStreamP = FileInputStream(
     os.path.join(absolutePath, "test/EventFiles/NASDAQ_LONG_probabilities.txt")
@@ -26,11 +26,13 @@ nasdaqEventStreamP = FileInputStream(
 def oneArgumentsearchTest(createTestFile=False):
     pattern = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a")),
-        GreaterThanCondition(Variable("a", lambda x: x["Opening Price"]), 136.27),
+        GreaterThanCondition(
+            Variable("a", lambda x: x["Opening Price"]), 136.27),
         timedelta(minutes=120),
         confidence=0.875,
     )
-    runTest("oneProb", [pattern], createTestFile, eventStream=nasdaqEventStreamP)
+    runTest("oneProb", [pattern], createTestFile,
+            eventStream=nasdaqEventStreamP)
 
 
 def oneArgumentsearchTestKleeneClosure(createTestFile=False):
@@ -46,7 +48,8 @@ def oneArgumentsearchTestKleeneClosure(createTestFile=False):
         timedelta(minutes=5),
         confidence=0.9,
     )
-    runTest("oneProbKC", [pattern], createTestFile, eventStream=nasdaqEventStreamP)
+    runTest("oneProbKC", [pattern], createTestFile,
+            eventStream=nasdaqEventStreamP)
 
 
 def simpleNotTest(createTestFile=False):
@@ -70,7 +73,8 @@ def simpleNotTest(createTestFile=False):
         confidence=0.95,
     )
 
-    runTest("simpleNotProb", [pattern], createTestFile, eventStream=nasdaqEventStreamP)
+    runTest("simpleNotProb", [pattern],
+            createTestFile, eventStream=nasdaqEventStreamP)
 
 
 def threePatternsTest(createTestFile=False):
@@ -137,4 +141,5 @@ def threePatternsTest(createTestFile=False):
         confidence=0.6,
     )
 
-    runMultiTest("ThreePatternTestProb", [pattern1, pattern2, pattern3], createTestFile, eventStream=nasdaqEventStreamP)
+    runMultiTest("ThreePatternTestProb", [
+                 pattern1, pattern2, pattern3], createTestFile, eventStream=nasdaqEventStreamP)

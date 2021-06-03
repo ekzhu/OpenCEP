@@ -1,14 +1,14 @@
 from datetime import timedelta
 
-from adaptive.optimizer.OptimizerFactory import OptimizerParameters
-from adaptive.optimizer.OptimizerTypes import OptimizerTypes
-from base.Pattern import Pattern
-from base.PatternStructure import AndOperator, SeqOperator, PrimitiveEventStructure, NegationOperator
-from condition.BaseRelationCondition import GreaterThanCondition, SmallerThanCondition, GreaterThanEqCondition, \
+from OpenCEP.adaptive.optimizer.OptimizerFactory import OptimizerParameters
+from OpenCEP.adaptive.optimizer.OptimizerTypes import OptimizerTypes
+from OpenCEP.base.Pattern import Pattern
+from OpenCEP.base.PatternStructure import AndOperator, SeqOperator, PrimitiveEventStructure, NegationOperator
+from OpenCEP.condition.BaseRelationCondition import GreaterThanCondition, SmallerThanCondition, GreaterThanEqCondition, \
     SmallerThanEqCondition
-from condition.CompositeCondition import AndCondition
-from condition.Condition import Variable
-from plan.multi.MultiPatternTreePlanMergeApproaches import MultiPatternTreePlanMergeApproaches
+from OpenCEP.condition.CompositeCondition import AndCondition
+from OpenCEP.condition.Condition import Variable
+from OpenCEP.plan.multi.MultiPatternTreePlanMergeApproaches import MultiPatternTreePlanMergeApproaches
 from test.testUtils import *
 
 currentPath = pathlib.Path(os.path.dirname(__file__))
@@ -18,20 +18,21 @@ sys.path.append(absolutePath)
 leaf_sharing_eval_mechanism_params = TreeBasedEvaluationMechanismParameters(
     optimizer_params=OptimizerParameters(opt_type=OptimizerTypes.TRIVIAL_OPTIMIZER,
                                          tree_plan_params=TreePlanBuilderParameters(builder_type=TreePlanBuilderTypes.TRIVIAL_LEFT_DEEP_TREE,
-                              cost_model_type=TreeCostModels.INTERMEDIATE_RESULTS_TREE_COST_MODEL,
-                              tree_plan_merger_type=MultiPatternTreePlanMergeApproaches.TREE_PLAN_TRIVIAL_SHARING_LEAVES)),
+                                                                                    cost_model_type=TreeCostModels.INTERMEDIATE_RESULTS_TREE_COST_MODEL,
+                                                                                    tree_plan_merger_type=MultiPatternTreePlanMergeApproaches.TREE_PLAN_TRIVIAL_SHARING_LEAVES)),
     storage_params=TreeStorageParameters(sort_storage=False, clean_up_interval=10, prioritize_sorting_by_timestamp=True))
 subtree_sharing_eval_mechanism_params = TreeBasedEvaluationMechanismParameters(
     optimizer_params=OptimizerParameters(opt_type=OptimizerTypes.TRIVIAL_OPTIMIZER,
-                                         tree_plan_params=
-                                         TreePlanBuilderParameters(builder_type=TreePlanBuilderTypes.TRIVIAL_LEFT_DEEP_TREE,
-                              cost_model_type=TreeCostModels.INTERMEDIATE_RESULTS_TREE_COST_MODEL,
-                              tree_plan_merger_type=MultiPatternTreePlanMergeApproaches.TREE_PLAN_SUBTREES_UNION)),
+                                         tree_plan_params=TreePlanBuilderParameters(builder_type=TreePlanBuilderTypes.TRIVIAL_LEFT_DEEP_TREE,
+                                                                                    cost_model_type=TreeCostModels.INTERMEDIATE_RESULTS_TREE_COST_MODEL,
+                                                                                    tree_plan_merger_type=MultiPatternTreePlanMergeApproaches.TREE_PLAN_SUBTREES_UNION)),
     storage_params=TreeStorageParameters(sort_storage=False, clean_up_interval=10, prioritize_sorting_by_timestamp=True))
 
 """
 Simple multi-pattern test with 2 patterns
 """
+
+
 def leafIsRoot(createTestFile=False):
     pattern1 = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a")),
@@ -49,7 +50,8 @@ def leafIsRoot(createTestFile=False):
         timedelta(minutes=5)
     )
 
-    runMultiTest("FirstMultiPattern", [pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("FirstMultiPattern", [
+                 pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
 
 
 """
@@ -73,20 +75,25 @@ def distinctPatterns(createTestFile=False):
         SeqOperator(PrimitiveEventStructure("AMZN", "x1"), PrimitiveEventStructure("AMZN", "x2"),
                     PrimitiveEventStructure("AMZN", "x3")),
         AndCondition(
-            SmallerThanEqCondition(Variable("x1", lambda x: x["Lowest Price"]), 75),
-            GreaterThanEqCondition(Variable("x2", lambda x: x["Peak Price"]), 78),
+            SmallerThanEqCondition(
+                Variable("x1", lambda x: x["Lowest Price"]), 75),
+            GreaterThanEqCondition(
+                Variable("x2", lambda x: x["Peak Price"]), 78),
             SmallerThanEqCondition(Variable("x3", lambda x: x["Lowest Price"]),
                                    Variable("x1", lambda x: x["Lowest Price"]))
         ),
         timedelta(days=1)
     )
 
-    runMultiTest("BigMultiPattern", [pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("BigMultiPattern", [
+                 pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
 
 
 """
 multi-pattern test with 3 patterns and leaf sharing
 """
+
+
 def threePatternsTest(createTestFile=False):
     pattern1 = Pattern(
         AndOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
@@ -101,7 +108,8 @@ def threePatternsTest(createTestFile=False):
     )
     pattern2 = Pattern(
         SeqOperator(PrimitiveEventStructure("MSFT", "a"), PrimitiveEventStructure("DRIV", "b"),
-                    PrimitiveEventStructure("MSFT", "c"), PrimitiveEventStructure("DRIV", "d"),
+                    PrimitiveEventStructure(
+                        "MSFT", "c"), PrimitiveEventStructure("DRIV", "d"),
                     PrimitiveEventStructure("MSFT", "e")),
         AndCondition(
             SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
@@ -126,12 +134,15 @@ def threePatternsTest(createTestFile=False):
         timedelta(minutes=5)
     )
 
-    runMultiTest("ThreePatternTest", [pattern1, pattern2, pattern3], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("ThreePatternTest", [
+                 pattern1, pattern2, pattern3], createTestFile, leaf_sharing_eval_mechanism_params)
 
 
 """
 multi-pattern test checking case where output node is not a root
 """
+
+
 def rootAndInner(createTestFile=False):
     # similar to leafIsRoot, but the time windows are different
     pattern1 = Pattern(
@@ -143,24 +154,30 @@ def rootAndInner(createTestFile=False):
         SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
                     PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
+            GreaterThanEqCondition(
+                Variable("a", lambda x: x["Peak Price"]), 135),
             SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
                                  Variable("c", lambda x: x["Peak Price"]))
         ),
         timedelta(minutes=3)
     )
 
-    runMultiTest("RootAndInner", [pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("RootAndInner", [pattern1, pattern2],
+                 createTestFile, leaf_sharing_eval_mechanism_params)
+
 
 """
 multi-pattern test 2 identical patterns with different time stamp
 """
+
+
 def samePatternDifferentTimeStamps(createTestFile=False):
     pattern1 = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
                     PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
+            GreaterThanEqCondition(
+                Variable("a", lambda x: x["Peak Price"]), 135),
             SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
                                  Variable("c", lambda x: x["Peak Price"]))
         ),
@@ -170,19 +187,23 @@ def samePatternDifferentTimeStamps(createTestFile=False):
         SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
                     PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
+            GreaterThanEqCondition(
+                Variable("a", lambda x: x["Peak Price"]), 135),
             SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
                                  Variable("c", lambda x: x["Peak Price"]))
         ),
         timedelta(minutes=2)
     )
 
-    runMultiTest("DifferentTimeStamp", [pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("DifferentTimeStamp", [
+                 pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
 
 
 """
 multi-pattern test sharing equivalent subtrees
 """
+
+
 def onePatternIncludesOther(createTestFile=False):
     pattern1 = Pattern(
         SeqOperator(PrimitiveEventStructure("GOOG", "a"), PrimitiveEventStructure("GOOG", "b"),
@@ -197,17 +218,21 @@ def onePatternIncludesOther(createTestFile=False):
     )
 
     pattern2 = Pattern(
-        SeqOperator(PrimitiveEventStructure("GOOG", "a"), PrimitiveEventStructure("GOOG", "b")),
+        SeqOperator(PrimitiveEventStructure("GOOG", "a"),
+                    PrimitiveEventStructure("GOOG", "b")),
         SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
-                             Variable("b", lambda x: x["Peak Price"]))
-        ,
+                             Variable("b", lambda x: x["Peak Price"])),
         timedelta(minutes=3)
     )
-    runMultiTest("onePatternIncludesOther", [pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("onePatternIncludesOther", [
+                 pattern1, pattern2], createTestFile, leaf_sharing_eval_mechanism_params)
+
 
 """
 multi-pattern test multiple patterns share the same output node
 """
+
+
 def samePatternSharingRoot(createTestFile=False):
     hierarchyPattern = Pattern(
         AndOperator(PrimitiveEventStructure("AMZN", "a"), PrimitiveEventStructure("AAPL", "b"),
@@ -245,12 +270,15 @@ def samePatternSharingRoot(createTestFile=False):
         timedelta(minutes=0.1)
     )
 
-    runMultiTest('hierarchyMultiPattern', [hierarchyPattern, hierarchyPattern2, hierarchyPattern3], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest('hierarchyMultiPattern', [hierarchyPattern, hierarchyPattern2,
+                 hierarchyPattern3], createTestFile, leaf_sharing_eval_mechanism_params)
 
 
 """
 multi-pattern test several patterns sharing the same subtree
 """
+
+
 def severalPatternShareSubtree(createTestFile=False):
     pattern = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a"),
@@ -280,15 +308,18 @@ def severalPatternShareSubtree(createTestFile=False):
                        timedelta(minutes=5)
                        )
 
-    runMultiTest("threeSharingSubtrees", [pattern, pattern2, pattern3], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("threeSharingSubtrees", [
+                 pattern, pattern2, pattern3], createTestFile, leaf_sharing_eval_mechanism_params)
 
-def notInTheBeginningShare(createTestFile = False):
-    getattr_func = lambda x: x["Opening Price"]
+
+def notInTheBeginningShare(createTestFile=False):
+    def getattr_func(x): return x["Opening Price"]
 
     pattern1 = Pattern(
         SeqOperator(NegationOperator(PrimitiveEventStructure("TYP1", "x")),
                     NegationOperator(PrimitiveEventStructure("TYP2", "y")),
-                    NegationOperator(PrimitiveEventStructure("TYP3", "z")), PrimitiveEventStructure("AAPL", "a"),
+                    NegationOperator(PrimitiveEventStructure(
+                        "TYP3", "z")), PrimitiveEventStructure("AAPL", "a"),
                     PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
             GreaterThanCondition(Variable("a", getattr_func),
@@ -321,7 +352,9 @@ def notInTheBeginningShare(createTestFile = False):
         timedelta(minutes=5)
     )
 
-    runMultiTest("MultipleNotBeginningShare", [pattern1, pattern2, pattern3], createTestFile, leaf_sharing_eval_mechanism_params)
+    runMultiTest("MultipleNotBeginningShare", [
+                 pattern1, pattern2, pattern3], createTestFile, leaf_sharing_eval_mechanism_params)
+
 
 """
 multi-pattern test sharing internal node between patterns
@@ -375,8 +408,8 @@ def multipleParentsForInternalNode(createTestFile=False):
         timedelta(minutes=2)
     )
 
-    runMultiTest("multipleParentsForInternalNode", [pattern1, pattern2, pattern3, pattern4], createTestFile, leaf_sharing_eval_mechanism_params)
-
+    runMultiTest("multipleParentsForInternalNode", [
+                 pattern1, pattern2, pattern3, pattern4], createTestFile, leaf_sharing_eval_mechanism_params)
 
 
 """
@@ -384,9 +417,7 @@ Same tests as above are repeated below, but with subtree sharing
 """
 
 
-
-
-def leafIsRootFullSharing(createTestFile = False):
+def leafIsRootFullSharing(createTestFile=False):
     pattern1 = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a")),
         GreaterThanCondition(Variable("a", lambda x: x["Peak Price"]), 135),
@@ -414,7 +445,8 @@ multi-pattern test 2 completely distinct patterns
 
 def distinctPatternsFullSharing(createTestFile=False):
     pattern1 = Pattern(
-        SeqOperator(PrimitiveEventStructure("GOOG", "a"), PrimitiveEventStructure("GOOG", "b"), PrimitiveEventStructure("GOOG", "c")),
+        SeqOperator(PrimitiveEventStructure("GOOG", "a"), PrimitiveEventStructure(
+            "GOOG", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
             SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
                                  Variable("b", lambda x: x["Peak Price"])),
@@ -424,10 +456,13 @@ def distinctPatternsFullSharing(createTestFile=False):
         timedelta(minutes=3)
     )
     pattern2 = Pattern(
-        SeqOperator(PrimitiveEventStructure("AMZN", "x1"), PrimitiveEventStructure("AMZN", "x2"), PrimitiveEventStructure("AMZN", "x3")),
+        SeqOperator(PrimitiveEventStructure("AMZN", "x1"), PrimitiveEventStructure(
+            "AMZN", "x2"), PrimitiveEventStructure("AMZN", "x3")),
         AndCondition(
-            SmallerThanEqCondition(Variable("x1", lambda x: x["Lowest Price"]), 75),
-            GreaterThanEqCondition(Variable("x2", lambda x: x["Peak Price"]), 78),
+            SmallerThanEqCondition(
+                Variable("x1", lambda x: x["Lowest Price"]), 75),
+            GreaterThanEqCondition(
+                Variable("x2", lambda x: x["Peak Price"]), 78),
             SmallerThanEqCondition(Variable("x3", lambda x: x["Lowest Price"]),
                                    Variable("x1", lambda x: x["Lowest Price"]))
         ),
@@ -441,10 +476,12 @@ def distinctPatternsFullSharing(createTestFile=False):
 """
 multi-pattern test with 3 patterns and leaf sharing
 """
-def threePatternsTestFullSharing(createTestFile = False):
+
+
+def threePatternsTestFullSharing(createTestFile=False):
     pattern1 = Pattern(
         AndOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
-                     PrimitiveEventStructure("GOOG", "c")),
+                    PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
             SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
                                  Variable("b", lambda x: x["Peak Price"])),
@@ -455,24 +492,27 @@ def threePatternsTestFullSharing(createTestFile = False):
     )
     pattern2 = Pattern(
         SeqOperator(PrimitiveEventStructure("MSFT", "a"), PrimitiveEventStructure("DRIV", "b"),
-                    PrimitiveEventStructure("MSFT", "c"), PrimitiveEventStructure("DRIV", "d"),
+                    PrimitiveEventStructure(
+                        "MSFT", "c"), PrimitiveEventStructure("DRIV", "d"),
                     PrimitiveEventStructure("MSFT", "e")),
         AndCondition(
-                SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
-                                     Variable("b", lambda x: x["Peak Price"])),
-                SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
-                                     Variable("c", lambda x: x["Peak Price"])),
-                SmallerThanCondition(Variable("c", lambda x: x["Peak Price"]),
-                                     Variable("d", lambda x: x["Peak Price"])),
-                SmallerThanCondition(Variable("d", lambda x: x["Peak Price"]),
-                                     Variable("e", lambda x: x["Peak Price"]))
+            SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
+                                 Variable("b", lambda x: x["Peak Price"])),
+            SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
+                                 Variable("c", lambda x: x["Peak Price"])),
+            SmallerThanCondition(Variable("c", lambda x: x["Peak Price"]),
+                                 Variable("d", lambda x: x["Peak Price"])),
+            SmallerThanCondition(Variable("d", lambda x: x["Peak Price"]),
+                                 Variable("e", lambda x: x["Peak Price"]))
         ),
         timedelta(minutes=10)
     )
     pattern3 = Pattern(
-        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
+        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure(
+            "AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanCondition(Variable("a", lambda x: x["Opening Price"]), Variable("c", lambda x: x["Opening Price"])),
+            GreaterThanCondition(Variable("a", lambda x: x["Opening Price"]), Variable(
+                "c", lambda x: x["Opening Price"])),
             GreaterThanCondition(Variable("a", lambda x: x["Opening Price"]), Variable("b", lambda x: x["Opening Price"]))),
         timedelta(minutes=5)
     )
@@ -484,17 +524,21 @@ def threePatternsTestFullSharing(createTestFile = False):
 """
 multi-pattern test checking case where output node is not a root
 """
-def rootAndInnerFullSharing(createTestFile = False):
-    #similar to leafIsRoot, but the time windows are different
+
+
+def rootAndInnerFullSharing(createTestFile=False):
+    # similar to leafIsRoot, but the time windows are different
     pattern1 = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a")),
         GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
         timedelta(minutes=5)
     )
     pattern2 = Pattern(
-        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
+        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure(
+            "AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
+            GreaterThanEqCondition(
+                Variable("a", lambda x: x["Peak Price"]), 135),
             SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
                                  Variable("c", lambda x: x["Peak Price"]))
         ),
@@ -504,6 +548,7 @@ def rootAndInnerFullSharing(createTestFile = False):
     runMultiTest("RootAndInnerFullSharing", [pattern1, pattern2], createTestFile, subtree_sharing_eval_mechanism_params,
                  expected_file_name="RootAndInner")
 
+
 """
 multi-pattern test 2 identical patterns with different time stamp
 """
@@ -511,18 +556,22 @@ multi-pattern test 2 identical patterns with different time stamp
 
 def samePatternDifferentTimeStampsFullSharing(createTestFile=False):
     pattern1 = Pattern(
-        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
+        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure(
+            "AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
+            GreaterThanEqCondition(
+                Variable("a", lambda x: x["Peak Price"]), 135),
             SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
                                  Variable("c", lambda x: x["Peak Price"]))
         ),
         timedelta(minutes=5)
     )
     pattern2 = Pattern(
-        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
+        SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure(
+            "AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
-            GreaterThanEqCondition(Variable("a", lambda x: x["Peak Price"]), 135),
+            GreaterThanEqCondition(
+                Variable("a", lambda x: x["Peak Price"]), 135),
             SmallerThanCondition(Variable("b", lambda x: x["Peak Price"]),
                                  Variable("c", lambda x: x["Peak Price"]))
         ),
@@ -552,19 +601,22 @@ def onePatternIncludesOtherFullSharing(createTestFile=False):
     )
 
     pattern2 = Pattern(
-        SeqOperator(PrimitiveEventStructure("GOOG", "a"), PrimitiveEventStructure("GOOG", "b")),
+        SeqOperator(PrimitiveEventStructure("GOOG", "a"),
+                    PrimitiveEventStructure("GOOG", "b")),
         SmallerThanCondition(Variable("a", lambda x: x["Peak Price"]),
-                             Variable("b", lambda x: x["Peak Price"]))
-        ,
+                             Variable("b", lambda x: x["Peak Price"])),
         timedelta(minutes=3)
     )
     runMultiTest("onePatternIncludesOtherFullSharing", [pattern1, pattern2], createTestFile, subtree_sharing_eval_mechanism_params,
                  expected_file_name="onePatternIncludesOther")
 
+
 """
 multi-pattern test multiple patterns share the same output node
 """
-def samePatternSharingRootFullSharing(createTestFile = False):
+
+
+def samePatternSharingRootFullSharing(createTestFile=False):
     hierarchyPattern = Pattern(
         AndOperator(PrimitiveEventStructure("AMZN", "a"), PrimitiveEventStructure("AAPL", "b"),
                     PrimitiveEventStructure("GOOG", "c")),
@@ -643,13 +695,14 @@ def severalPatternShareSubtreeFullSharing(createTestFile=False):
                  expected_file_name="threeSharingSubtrees")
 
 
-def notInTheBeginningShareFullSharing(createTestFile = False):
-    getattr_func = lambda x: x["Opening Price"]
+def notInTheBeginningShareFullSharing(createTestFile=False):
+    def getattr_func(x): return x["Opening Price"]
 
     pattern1 = Pattern(
         SeqOperator(NegationOperator(PrimitiveEventStructure("TYP1", "x")),
                     NegationOperator(PrimitiveEventStructure("TYP2", "y")),
-                    NegationOperator(PrimitiveEventStructure("TYP3", "z")), PrimitiveEventStructure("AAPL", "a"),
+                    NegationOperator(PrimitiveEventStructure(
+                        "TYP3", "z")), PrimitiveEventStructure("AAPL", "a"),
                     PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
         AndCondition(
             GreaterThanCondition(Variable("a", getattr_func),
@@ -685,6 +738,7 @@ def notInTheBeginningShareFullSharing(createTestFile = False):
     runMultiTest("MultipleNotBeginningShareFullSharing", [pattern1, pattern2, pattern3], createTestFile, subtree_sharing_eval_mechanism_params,
                  expected_file_name="MultipleNotBeginningShare")
 
+
 """
 multi-pattern test sharing internal node between patterns
 """
@@ -706,12 +760,13 @@ def multipleParentsForInternalNodeFullSharing(createTestFile=False):
     pattern2 = Pattern(
         SeqOperator(PrimitiveEventStructure("AAPL", "a"),
                     PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("GOOG", "c")),
-            AndCondition(
-                GreaterThanCondition(Variable("a", lambda x: x["Opening Price"]),
-                                     Variable("b", lambda x: x["Opening Price"])),
-                GreaterThanCondition(Variable("c", lambda x: x["Peak Price"]), 530)
-            ),
-            timedelta(minutes=3)
+        AndCondition(
+            GreaterThanCondition(Variable("a", lambda x: x["Opening Price"]),
+                                 Variable("b", lambda x: x["Opening Price"])),
+            GreaterThanCondition(
+                Variable("c", lambda x: x["Peak Price"]), 530)
+        ),
+        timedelta(minutes=3)
     )
 
     pattern3 = Pattern(

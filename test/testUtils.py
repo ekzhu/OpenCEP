@@ -2,19 +2,19 @@ import os
 import pathlib
 import sys
 
-from CEP import CEP
-from evaluation.EvaluationMechanismFactory import TreeBasedEvaluationMechanismParameters
-from adaptive.optimizer.OptimizerFactory import StatisticsDeviationAwareOptimizerParameters
-from stream.Stream import OutputStream
-from stream.FileStream import FileInputStream, FileOutputStream
-from misc.Utils import generate_matches
-from plan.TreeCostModels import TreeCostModels
-from plan.TreePlanBuilderFactory import TreePlanBuilderParameters
-from plan.TreePlanBuilderTypes import TreePlanBuilderTypes
-from plugin.stocks.Stocks import MetastockDataFormatter
-from stream.FileStream import FileInputStream, FileOutputStream
-from stream.Stream import OutputStream
-from tree.PatternMatchStorage import TreeStorageParameters
+from OpenCEP.CEP import CEP
+from OpenCEP.evaluation.EvaluationMechanismFactory import TreeBasedEvaluationMechanismParameters
+from OpenCEP.adaptive.optimizer.OptimizerFactory import StatisticsDeviationAwareOptimizerParameters
+from OpenCEP.stream.Stream import OutputStream
+from OpenCEP.stream.FileStream import FileInputStream, FileOutputStream
+from OpenCEP.misc.Utils import generate_matches
+from OpenCEP.plan.TreeCostModels import TreeCostModels
+from OpenCEP.plan.TreePlanBuilderFactory import TreePlanBuilderParameters
+from OpenCEP.plan.TreePlanBuilderTypes import TreePlanBuilderTypes
+from OpenCEP.plugin.stocks.Stocks import MetastockDataFormatter
+from OpenCEP.stream.FileStream import FileInputStream, FileOutputStream
+from OpenCEP.stream.Stream import OutputStream
+from OpenCEP.tree.PatternMatchStorage import TreeStorageParameters
 
 
 currentPath = pathlib.Path(os.path.dirname(__file__))

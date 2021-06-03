@@ -1,15 +1,15 @@
-from adaptive.optimizer.OptimizerFactory import OptimizerParameters
-from adaptive.optimizer.OptimizerTypes import OptimizerTypes
+from OpenCEP.adaptive.optimizer.OptimizerFactory import OptimizerParameters
+from OpenCEP.adaptive.optimizer.OptimizerTypes import OptimizerTypes
 from test.testUtils import *
-from plan.LeftDeepTreeBuilders import *
-from plan.BushyTreeBuilders import *
+from OpenCEP.plan.LeftDeepTreeBuilders import *
+from OpenCEP.plan.BushyTreeBuilders import *
 from datetime import timedelta
-from condition.Condition import Variable, TrueCondition, BinaryCondition
-from condition.CompositeCondition import AndCondition
-from condition.BaseRelationCondition import EqCondition
-from base.PatternStructure import AndOperator, SeqOperator, PrimitiveEventStructure, KleeneClosureOperator
-from base.Pattern import Pattern
-from plan.TreePlanBuilderFactory import IterativeImprovementTreePlanBuilderParameters
+from OpenCEP.condition.Condition import Variable, TrueCondition, BinaryCondition
+from OpenCEP.condition.CompositeCondition import AndCondition
+from OpenCEP.condition.BaseRelationCondition import EqCondition
+from OpenCEP.base.PatternStructure import AndOperator, SeqOperator, PrimitiveEventStructure, KleeneClosureOperator
+from OpenCEP.base.Pattern import Pattern
+from OpenCEP.plan.TreePlanBuilderFactory import IterativeImprovementTreePlanBuilderParameters
 
 
 def basicNestedTest(createTestFile=False):
@@ -38,14 +38,17 @@ def basicNestedTest(createTestFile=False):
 def nestedAscendingTest(createTestFile=False):
     pattern = Pattern(
         AndOperator(SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b")),
-                    SeqOperator(PrimitiveEventStructure("AVID", "c"), PrimitiveEventStructure("BIDU", "d")),
-                    AndOperator(PrimitiveEventStructure("GOOG", "e"), PrimitiveEventStructure("AAPL", "f")),
+                    SeqOperator(PrimitiveEventStructure("AVID", "c"),
+                                PrimitiveEventStructure("BIDU", "d")),
+                    AndOperator(PrimitiveEventStructure("GOOG", "e"),
+                                PrimitiveEventStructure("AAPL", "f")),
                     PrimitiveEventStructure("GOOG", "g"),
                     SeqOperator(PrimitiveEventStructure("AMZN", "h"), PrimitiveEventStructure("BIDU", "i"))),
         TrueCondition(),
         timedelta(minutes=1)
     )
-    pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: [0.11, 0.2, 0.3, 0.4, 0.5, 0.11, 0.5, 0.2, 0.4]})
+    pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: [
+                           0.11, 0.2, 0.3, 0.4, 0.5, 0.11, 0.5, 0.2, 0.4]})
     eval_params = TreeBasedEvaluationMechanismParameters(
         optimizer_params=OptimizerParameters(opt_type=OptimizerTypes.TRIVIAL_OPTIMIZER,
                                              tree_plan_params=TreePlanBuilderParameters(TreePlanBuilderTypes.SORT_BY_FREQUENCY_LEFT_DEEP_TREE)),
@@ -57,22 +60,27 @@ def nestedAscendingTest(createTestFile=False):
 def nestedAscendingStructuralTest():
     pattern = Pattern(
         AndOperator(SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b")),
-                    SeqOperator(PrimitiveEventStructure("AVID", "c"), PrimitiveEventStructure("BIDU", "d")),
-                    AndOperator(PrimitiveEventStructure("GOOG", "e"), PrimitiveEventStructure("AAPL", "f")),
+                    SeqOperator(PrimitiveEventStructure("AVID", "c"),
+                                PrimitiveEventStructure("BIDU", "d")),
+                    AndOperator(PrimitiveEventStructure("GOOG", "e"),
+                                PrimitiveEventStructure("AAPL", "f")),
                     PrimitiveEventStructure("GOOG", "g"),
                     SeqOperator(PrimitiveEventStructure("AMZN", "h"), PrimitiveEventStructure("BIDU", "i"))),
         TrueCondition(),
         timedelta(minutes=1)
     )
-    pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: [0.11, 0.2, 0.3, 0.4, 0.5, 0.11, 0.5, 0.2, 0.4]})
+    pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: [
+                           0.11, 0.2, 0.3, 0.4, 0.5, 0.11, 0.5, 0.2, 0.4]})
     eval_params = TreeBasedEvaluationMechanismParameters(
         optimizer_params=OptimizerParameters(opt_type=OptimizerTypes.TRIVIAL_OPTIMIZER,
                                              tree_plan_params=TreePlanBuilderParameters(
                                                  TreePlanBuilderTypes.SORT_BY_FREQUENCY_LEFT_DEEP_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    expected_result = ('And', ('And', ('And', ('And', 'g', ('Seq', 'a', 'b')), ('Seq', 'c', 'd')), ('And', 'e', 'f')), ('Seq', 'h', 'i'))
-    runStructuralTest('nestedAscendingStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    expected_result = ('And', ('And', ('And', ('And', 'g', ('Seq', 'a', 'b')),
+                       ('Seq', 'c', 'd')), ('And', 'e', 'f')), ('Seq', 'h', 'i'))
+    runStructuralTest('nestedAscendingStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def greedyNestedTest(createTestFile=False):
@@ -95,7 +103,8 @@ def greedyNestedTest(createTestFile=False):
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -104,7 +113,8 @@ def greedyNestedTest(createTestFile=False):
                                                  TreePlanBuilderTypes.GREEDY_LEFT_DEEP_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    runTest('greedyNested', [pattern], createTestFile, eval_mechanism_params=eval_params, events=nasdaqEventStream)
+    runTest('greedyNested', [pattern], createTestFile,
+            eval_mechanism_params=eval_params, events=nasdaqEventStream)
 
 
 def greedyNestedStructuralTest():
@@ -127,7 +137,8 @@ def greedyNestedStructuralTest():
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -137,7 +148,8 @@ def greedyNestedStructuralTest():
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
     expected_result = ('And', ('Seq', 'b', 'a'), ('Seq', 'd', 'c'))
-    runStructuralTest('greedyNestedStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    runStructuralTest('greedyNestedStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def iiGreedyNestedPatternSearchTest(createTestFile=False):
@@ -160,18 +172,20 @@ def iiGreedyNestedPatternSearchTest(createTestFile=False):
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
         optimizer_params=OptimizerParameters(opt_type=OptimizerTypes.TRIVIAL_OPTIMIZER,
-            tree_plan_params=IterativeImprovementTreePlanBuilderParameters(DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.optimizer_params.tree_plan_params.cost_model_type,
-                                                      20,
-                                                      IterativeImprovementType.SWAP_BASED,
-                                                      IterativeImprovementInitType.GREEDY)),
+                                             tree_plan_params=IterativeImprovementTreePlanBuilderParameters(DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.optimizer_params.tree_plan_params.cost_model_type,
+                                                                                                            20,
+                                                                                                            IterativeImprovementType.SWAP_BASED,
+                                                                                                            IterativeImprovementInitType.GREEDY)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    runTest('iiGreedyNested', [pattern], createTestFile, eval_mechanism_params=eval_params, events=nasdaqEventStream)
+    runTest('iiGreedyNested', [pattern], createTestFile,
+            eval_mechanism_params=eval_params, events=nasdaqEventStream)
 
 
 def iiGreedyNestedStructuralTest():
@@ -194,7 +208,8 @@ def iiGreedyNestedStructuralTest():
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -207,14 +222,17 @@ def iiGreedyNestedStructuralTest():
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
     expected_result = ('And', ('Seq', 'b', 'a'), ('Seq', 'd', 'c'))
-    runStructuralTest('iiGreedyNestedStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    runStructuralTest('iiGreedyNestedStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def greedyNestedComplexStructuralTest():
     pattern = Pattern(
         AndOperator(SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"), PrimitiveEventStructure("DRIV", "c")),
-                    SeqOperator(PrimitiveEventStructure("LOCM", "d"), PrimitiveEventStructure("GOOG", "e")),
-                    SeqOperator(PrimitiveEventStructure("AVID", "f"), SeqOperator(PrimitiveEventStructure("ORLY", "g"), PrimitiveEventStructure("CBRL", "h")), PrimitiveEventStructure("BIDU", "i")),
+                    SeqOperator(PrimitiveEventStructure("LOCM", "d"),
+                                PrimitiveEventStructure("GOOG", "e")),
+                    SeqOperator(PrimitiveEventStructure("AVID", "f"), SeqOperator(PrimitiveEventStructure(
+                        "ORLY", "g"), PrimitiveEventStructure("CBRL", "h")), PrimitiveEventStructure("BIDU", "i")),
                     PrimitiveEventStructure("MSFT", "j")),
         AndCondition(
             BinaryCondition(Variable("a", lambda x: x["Opening Price"]),
@@ -249,8 +267,10 @@ def greedyNestedComplexStructuralTest():
                                                  TreePlanBuilderTypes.GREEDY_LEFT_DEEP_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    expected_result = ('And', ('And', ('And', 'j', ('Seq', ('Seq', 'f', 'i'), ('Seq', 'g', 'h'))), ('Seq', 'd', 'e')), ('Seq', ('Seq', 'a', 'b'), 'c'))
-    runStructuralTest('greedyNestedComplexStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    expected_result = ('And', ('And', ('And', 'j', ('Seq', ('Seq', 'f', 'i'),
+                       ('Seq', 'g', 'h'))), ('Seq', 'd', 'e')), ('Seq', ('Seq', 'a', 'b'), 'c'))
+    runStructuralTest('greedyNestedComplexStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def dpLdNestedPatternSearchTest(createTestFile=False):
@@ -273,7 +293,8 @@ def dpLdNestedPatternSearchTest(createTestFile=False):
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -282,7 +303,8 @@ def dpLdNestedPatternSearchTest(createTestFile=False):
                                                  TreePlanBuilderTypes.DYNAMIC_PROGRAMMING_LEFT_DEEP_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    runTest('dpLdNested', [pattern], createTestFile, eval_mechanism_params=eval_params, events=nasdaqEventStream)
+    runTest('dpLdNested', [pattern], createTestFile,
+            eval_mechanism_params=eval_params, events=nasdaqEventStream)
 
 
 def dpLdNestedStructuralTest():
@@ -305,7 +327,8 @@ def dpLdNestedStructuralTest():
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -315,7 +338,8 @@ def dpLdNestedStructuralTest():
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
     expected_result = ('And', ('Seq', 'b', 'a'), ('Seq', 'd', 'c'))
-    runStructuralTest('dpLdNestedStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    runStructuralTest('dpLdNestedStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def dpBNestedPatternSearchTest(createTestFile=False):
@@ -338,7 +362,8 @@ def dpBNestedPatternSearchTest(createTestFile=False):
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -347,7 +372,8 @@ def dpBNestedPatternSearchTest(createTestFile=False):
                                                  TreePlanBuilderTypes.DYNAMIC_PROGRAMMING_BUSHY_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    runTest('dpBNested', [pattern], createTestFile, eval_mechanism_params=eval_params, events=nasdaqEventStream)
+    runTest('dpBNested', [pattern], createTestFile,
+            eval_mechanism_params=eval_params, events=nasdaqEventStream)
 
 
 def dpBNestedStructuralTest():
@@ -370,7 +396,8 @@ def dpBNestedStructuralTest():
     )
     selectivityMatrix = [[1.0, 0.9457796098355941, 1.0, 1.0], [0.9457796098355941, 1.0, 0.15989723367389616, 1.0],
                          [1.0, 0.15989723367389616, 1.0, 0.9992557393942864], [1.0, 1.0, 0.9992557393942864, 1.0]]
-    arrivalRates = [0.016597077244258872, 0.01454418928322895, 0.013917884481558803, 0.012421711899791231]
+    arrivalRates = [0.016597077244258872, 0.01454418928322895,
+                    0.013917884481558803, 0.012421711899791231]
     pattern.set_statistics({StatisticsTypes.ARRIVAL_RATES: arrivalRates,
                             StatisticsTypes.SELECTIVITY_MATRIX: selectivityMatrix})
     eval_params = TreeBasedEvaluationMechanismParameters(
@@ -380,14 +407,16 @@ def dpBNestedStructuralTest():
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
     expected_result = ('And', ('Seq', 'a', 'b'), ('Seq', 'c', 'd'))
-    runStructuralTest('dpBNestedStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    runStructuralTest('dpBNestedStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def dpLdNestedComplexStructuralTest():
     pattern = Pattern(
         AndOperator(SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
                                 PrimitiveEventStructure("DRIV", "c")),
-                    SeqOperator(PrimitiveEventStructure("LOCM", "d"), PrimitiveEventStructure("GOOG", "e")),
+                    SeqOperator(PrimitiveEventStructure("LOCM", "d"),
+                                PrimitiveEventStructure("GOOG", "e")),
                     SeqOperator(PrimitiveEventStructure("AVID", "f"), PrimitiveEventStructure("BIDU", "g"),
                                 SeqOperator(PrimitiveEventStructure("ORLY", "h"),
                                             PrimitiveEventStructure("CBRL", "i"))),
@@ -425,15 +454,18 @@ def dpLdNestedComplexStructuralTest():
                                                  TreePlanBuilderTypes.DYNAMIC_PROGRAMMING_LEFT_DEEP_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    expected_result = ('And', ('And', ('And', 'j', ('Seq', ('Seq', 'f', 'g'), ('Seq', 'h', 'i'))), ('Seq', 'd', 'e')), ('Seq', ('Seq', 'a', 'b'), 'c'))
-    runStructuralTest('dpLdNestedComplexStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    expected_result = ('And', ('And', ('And', 'j', ('Seq', ('Seq', 'f', 'g'),
+                       ('Seq', 'h', 'i'))), ('Seq', 'd', 'e')), ('Seq', ('Seq', 'a', 'b'), 'c'))
+    runStructuralTest('dpLdNestedComplexStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def zstreamOrdNestedComplexStructuralTest():
     pattern = Pattern(
         AndOperator(SeqOperator(PrimitiveEventStructure("AAPL", "a"), PrimitiveEventStructure("AMZN", "b"),
                                 PrimitiveEventStructure("DRIV", "c")),
-                    SeqOperator(PrimitiveEventStructure("LOCM", "d"), PrimitiveEventStructure("GOOG", "e")),
+                    SeqOperator(PrimitiveEventStructure("LOCM", "d"),
+                                PrimitiveEventStructure("GOOG", "e")),
                     SeqOperator(PrimitiveEventStructure("AVID", "f"), PrimitiveEventStructure("BIDU", "g"),
                                 SeqOperator(PrimitiveEventStructure("ORLY", "h"),
                                             PrimitiveEventStructure("CBRL", "i"))),
@@ -471,8 +503,10 @@ def zstreamOrdNestedComplexStructuralTest():
                                                  TreePlanBuilderTypes.ORDERED_ZSTREAM_BUSHY_TREE)),
         storage_params=DEFAULT_TESTING_EVALUATION_MECHANISM_SETTINGS.storage_params
     )
-    expected_result = ('And', ('And', ('And', 'j', ('Seq', ('Seq', 'f', 'g'), ('Seq', 'h', 'i'))), ('Seq', 'd', 'e')), ('Seq', ('Seq', 'a', 'b'), 'c'))
-    runStructuralTest('zstreamOrdNestedComplexStructuralTest', [pattern], expected_result, eval_mechanism_params=eval_params)
+    expected_result = ('And', ('And', ('And', 'j', ('Seq', ('Seq', 'f', 'g'),
+                       ('Seq', 'h', 'i'))), ('Seq', 'd', 'e')), ('Seq', ('Seq', 'a', 'b'), 'c'))
+    runStructuralTest('zstreamOrdNestedComplexStructuralTest', [
+                      pattern], expected_result, eval_mechanism_params=eval_params)
 
 
 def KCNestedStructuralTest():
